@@ -6,4 +6,4 @@ const QuizTakePage = () => {
      );
 }
  
-export default QuiztakePage;
+export default QuizTakePage;
