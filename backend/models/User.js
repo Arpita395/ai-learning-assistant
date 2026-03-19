@@ -14,7 +14,7 @@ const userSchema= new mongoose.Schema({
         required: [true, 'Please provide an email'],
         unique: true,
         lowercase: true,
-        match: [/^\+@\S+\.\S+$/, 'Please provide a valid email']
+        match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
     },
     password: {
         type: String,
@@ -31,9 +31,9 @@ const userSchema= new mongoose.Schema({
 })
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function() {
     if(!this.isModified('password')) {
-        next()
+       return
     }
 
     const salt= await bcrypt.genSalt(10)
