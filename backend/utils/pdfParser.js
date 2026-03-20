@@ -1,27 +1,22 @@
-import fs from "fs";
-import {PDFParse} from "pdf-parse";
+import fs from "fs/promises";
+import { createRequire } from "module";
 
-/**
- * Parse PDF and extract text
- * @param {string} filePath - Path to uploaded PDF file
- * @returns {Promise<{text: string, numPages: number}>} extracted text
- */
+const require = createRequire(import.meta.url);
+const pdfParse = require("pdf-parse");
+
 export const extractedTextFromPDF = async (filePath) => {
   try {
-    // Read file
     const dataBuffer = await fs.readFile(filePath);
-    const parser= new PDFParse(new Uint8Array(dataBuffer))
-    // Parse PDF
-    const data = await parser.getText();
+
+    const data = await pdfParse(dataBuffer);
 
     return {
-        text: data.text,
-        numPages: data.numPages,
-        info: data.info
-    }
+      text: data.text || "",
+      numPages: data.numpages || data.numPages || 0,
+      info: data.info || {}
+    };
   } catch (error) {
-    console.error("PDF parsing error:", error.message);
+    console.error("PDF parsing error:", error);
     throw new Error("Failed to parse PDF");
   }
 };
-

@@ -39,6 +39,6 @@ const flashcardSchema= new mongoose.Schema({
 
 flashcardSchema.index({userId: 1, document: 1})
 
-const Flashcard= mongoose.model("Flashcard", flashcard)
+const Flashcard= mongoose.model("Flashcard", flashcardSchema)
 
 export default Flashcard

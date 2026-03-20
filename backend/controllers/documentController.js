@@ -68,10 +68,11 @@ export const uploadDocument= async (req, res, next)=> {
 // Helper function to process PDF
 const processPDF= async(documentId, filePath)=> {
     try {
-        const {text}= await extractedTextFromPDF(filePath)
+        const data= await extractedTextFromPDF(filePath)
+        const text= data.text
 
         // Create chunks
-        const chunks= chunkText(text, 500, 50)
+        const chunks= chunkText(text, 500)
 
         // Update document
         await Document.findByIdAndUpdate(documentId, {
@@ -80,7 +81,6 @@ const processPDF= async(documentId, filePath)=> {
             status: 'ready'
         })
 
-        console.log(`Document ${documentId} processed successfully`)
     } catch (error) {
         console.error(`Error processing document ${documentId}:`, error)
 
@@ -95,7 +95,49 @@ const processPDF= async(documentId, filePath)=> {
 // @access Private
 export const getDocuments= async(req, res, next)=> {
     try {
-        
+        const documents= await Document.aggregate([
+            {
+                $match: {userId: new mongoose.Types.ObjectId(req.user._id)}
+            },
+            {
+                $lookup: {
+                    from: 'flashcards',
+                    localField: '_id',
+                    foreignField: 'documentId',
+                    as: 'flashcardSets'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'quizzes',
+                    localField: '_id',
+                    foreignField: 'documentId',
+                    as: 'quizzes'
+                }
+            },
+            {
+                $addFields: {
+                    flashcardCount: {$size: '$flashcardSets'},
+                    quizCount: {$size: '$quizzes'}
+                }
+            },
+            {
+                $project: {
+                    extractedText: 0,
+                    chunks: 0,
+                    flashcardSets: 0,
+                    quizzes: 0
+                }
+            }, {
+                $sort: {uploadData: -1}
+            }
+        ])
+
+        res.status(200).json({
+            success: true,
+            count: documents.length,
+            data: documents,
+        })
     } catch (error) {
         next(error)
     }
