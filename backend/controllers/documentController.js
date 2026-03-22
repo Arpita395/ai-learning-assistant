@@ -72,7 +72,14 @@ const processPDF= async(documentId, filePath)=> {
         const text= data.text
 
         // Create chunks
-        const chunks= chunkText(text, 500)
+        const rawChunks = chunkText(text, 500);
+
+        const chunks = rawChunks.map((chunk, index) => ({
+            chunkIndex: index,          // FORCE correct field
+            content: chunk.content || chunk
+        }));
+
+        console.log("Chunks being saved:", chunks);
 
         // Update document
         await Document.findByIdAndUpdate(documentId, {
@@ -80,6 +87,7 @@ const processPDF= async(documentId, filePath)=> {
             chunks: chunks,
             status: 'ready'
         })
+        
 
     } catch (error) {
         console.error(`Error processing document ${documentId}:`, error)
@@ -148,7 +156,35 @@ export const getDocuments= async(req, res, next)=> {
 // @access Private
 export const getDocument= async(req, res,next)=> {
     try {
-        
+        const document= await Document.findOne({
+            _id: req.params.id,
+            userId: req.user._id
+        })
+
+        if(!document) {
+            return res.status(404).json({
+            success: false,
+            error: 'Document not found',
+            statusCode: 404
+            })
+        }
+
+        const flashcardCount= await Flashcard.countDocuments({documentId: document._id, userId: req.user._id})
+        const quizCount= await Quiz.countDocuments({documentId: document._id, userId: req.user._id})
+
+        // Update last accessed
+        document.lastAccessed= Date.now()
+        await document.save()
+
+        // Combine document data with counts
+        const documentData= document.toObject()
+        documentData.flashcardCount= flashcardCount
+        documentData.quizCount= quizCount
+
+        res.status(200).json({
+            success: true,
+            data: documentData
+        })
     } catch (error) {
         next(error)
     }
@@ -159,18 +195,30 @@ export const getDocument= async(req, res,next)=> {
 // @access Private
 export const deleteDocument= async(req, res,next)=> {
     try {
-        
-    } catch (error) {
-        next(error)
-    }
-}
+        const document= await Document.findOne({
+            _id: req.params.id,
+            userId: req.user._id
+        })
 
-// @desc Update document
-// @route PUT /api/documents/:id
-// @access Private
-export const updateDocument= async(req, res,next)=> {
-    try {
-        
+        if(!document) {
+            return res.status(404).json({
+            success: false,
+            error: 'Document not found',
+            statusCode: 404
+            })
+        }
+
+        // Delete file from filesystem
+            await fs.unlink(document.filePath).catch(()=> {})
+
+            // Delete document
+            await document.deleteOne()
+
+            res.status(200).json({
+            success: true,
+            message: 'Document deleted successfully'
+            })
+
     } catch (error) {
         next(error)
     }

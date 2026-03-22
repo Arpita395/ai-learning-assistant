@@ -64,9 +64,9 @@ export function chunkText(text, chunkSize = DEFAULT_CHUNK_SIZE) {
   }
 
   return chunks.map((content, index) => ({
-    index,
-    content: content.trim()
-  }));
+  chunkIndex: index, 
+  content: content.trim()
+}));
 }
 
 // ------------------------
