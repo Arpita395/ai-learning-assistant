@@ -297,7 +297,7 @@ export const explainConcept= async(req, res, next)=> {
 }
 
 // @desc Get chat history for a  document
-// @route GET /api/ai/generate-flashcards
+// @route GET /api/ai/chat-history/:documentId
 // @access Private
 export const getChatHistory= async(req, res, next)=> {
     try {
@@ -311,20 +311,35 @@ export const getChatHistory= async(req, res, next)=> {
           });
         }
 
+        const document = await Document.findOne({
+          _id: documentId,
+          userId: req.user._id,
+          status: 'ready'
+        });
+
+        if (!document) {
+          return res.status(404).json({
+            success: false,
+            error: 'Document not found or not ready',
+            statusCode: 404
+          });
+        }
+
         const chatHistory= await ChatHistory.findOne({
           userId: req.user._id,
           documentId: document._id
         }).select('messages')  //Only retrieve the messages array
 
+
         if(!chatHistory) {
-          return res.status(200).jsonson({
+          return res.status(200).json({
             success: true,
             data: [],  // Return an empty array if no chat history found
             message: 'No chat history found for this document'
           })
         }
 
-        return res.status(200).jsonson({
+        return res.status(200).json({
             success: true,
             data: chatHistory.messages,
             message: 'Chat History retrieved successfully'
