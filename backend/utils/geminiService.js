@@ -264,10 +264,13 @@ export const chatWithDocument = async (question, chunks) => {
   const context = chunks.map(c => c.content).join("\n");
 
   const prompt = `
-Answer the question ONLY using the context below.
+Answer the question using the context below.
 
-If not found, say:
-"This information is not available in the provided document"
+The answer may be phrased differently in the context (e.g., uses, importance, functions).
+
+Extract and summarize all relevant points.
+
+If partial information is available, still answer.
 
 Context:
 ${context}

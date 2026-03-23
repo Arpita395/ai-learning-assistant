@@ -83,31 +83,37 @@ export function findRelevantChunks(chunks, query, topK = 5) {
 
   const scoredChunks = chunks.map((chunk, index) => {
     const text = chunk.content.toLowerCase();
+    const fullQuery = query.toLowerCase();
+
     let score = 0;
+
+    // Strong boost for full phrase match
+    if (text.includes(fullQuery)) {
+      score += 10;
+    }
+
     let matchCount = 0;
 
     for (let word of queryWords) {
       if (text.includes(word)) {
         score += 2;
         matchCount++;
-      } else {
-        for (let token of text.split(" ")) {
-          if (token.includes(word)) score += 1;
-        }
       }
     }
 
     if (matchCount > 1) score += matchCount;
 
+    // Normalize
     const lengthFactor = chunk.content.length / 1000;
     score = score / (lengthFactor || 1);
 
     score += Math.max(0, (10 - index) * 0.1);
 
-    return { index: chunk.index, content: chunk.content, score };
+    return { chunkIndex: index, content: chunk.content, score };
   });
 
   return scoredChunks
-    .sort((a, b) => b.score - a.score)
-    .slice(0, topK);
+  .filter(c => c.score > 0) 
+  .sort((a, b) => b.score - a.score)
+  .slice(0, topK);
 }
