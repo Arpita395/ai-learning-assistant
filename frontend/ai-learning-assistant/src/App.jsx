@@ -12,7 +12,9 @@ import FlashcardsListPage from './pages/Flashcards/FlashcardListPage'
 import QuizTakePage from './pages/Quizzes/QuizTakePage';
 import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import ProfilePage from './pages/Profile/ProfilePage';
+import AppLayout from './components/layout/AppLayout';
 import { useAuth } from './context/AuthContext';
+
 
 const App = () => {
   const {isAuthenticated, loading}= useAuth()
@@ -34,7 +36,9 @@ const App = () => {
 
           {/* Protected Routes */}
           <Route element= {<ProtectedRoute />} />
-            <Route path= "/dashboard" element= {<DashboardPage />} />
+            <Route path="/" element={<AppLayout />}>
+              <Route path="dashboard" element={<DashboardPage />} />
+            </Route>
             <Route path= "/documents" element= {<DocumentListPage />} />
             <Route path= "/documents/:id" element= {<DocumentDetailPage />} />
             <Route path= "/flashcards" element= {<FlashcardsListPage />} />
