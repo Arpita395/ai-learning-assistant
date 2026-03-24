@@ -8,13 +8,14 @@ import DashboardPage from './pages/Dashboard/DashboardPage';
 import DocumentListPage from './pages/Documents/DocumentListPage';
 import DocumentDetailPage from './pages/Documents/DocumentDetailPage';
 import FlashcardPage from './pages/Flashcards/FlashcardPage';
+import FlashcardsListPage from './pages/Flashcards/FlashcardListPage'
 import QuizTakePage from './pages/Quizzes/QuizTakePage';
 import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import ProfilePage from './pages/Profile/ProfilePage';
+import { useAuth } from './context/AuthContext';
 
 const App = () => {
-   const isAuthenticated= true;
-   const loading= false;
+  const {isAuthenticated, loading}= useAuth()
 
     if(loading){
       return (
@@ -36,7 +37,7 @@ const App = () => {
             <Route path= "/dashboard" element= {<DashboardPage />} />
             <Route path= "/documents" element= {<DocumentListPage />} />
             <Route path= "/documents/:id" element= {<DocumentDetailPage />} />
-            <Route path= "/flashcards" element= {<FlashcardPage />} />
+            <Route path= "/flashcards" element= {<FlashcardsListPage />} />
             <Route path= "/documents/:id/flashcards" element= {<FlashcardPage />} />
             <Route path= "/quizzes/:quizId" element= {<QuizTakePage />} />
             <Route path= "/quizzes/:quizId/results" element= {<QuizResultPage />} />
