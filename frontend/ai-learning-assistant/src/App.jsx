@@ -35,10 +35,8 @@ const App = () => {
           <Route path= "/register" element={<RegisterPage />} />
 
           {/* Protected Routes */}
-          <Route element= {<ProtectedRoute />} />
-            <Route path="/" element={<AppLayout />}>
-              <Route path="dashboard" element={<DashboardPage />} />
-            </Route>
+          <Route element= {<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path= "/documents" element= {<DocumentListPage />} />
             <Route path= "/documents/:id" element= {<DocumentDetailPage />} />
             <Route path= "/flashcards" element= {<FlashcardsListPage />} />
@@ -46,6 +44,7 @@ const App = () => {
             <Route path= "/quizzes/:quizId" element= {<QuizTakePage />} />
             <Route path= "/quizzes/:quizId/results" element= {<QuizResultPage />} />
             <Route path= "/profile" element= {<ProfilePage />} />
+          </Route>
 
           <Route path= "*" element={<NotFoundPage />} />
         </Routes>
