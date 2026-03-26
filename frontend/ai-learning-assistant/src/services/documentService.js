@@ -14,7 +14,7 @@ const uploadDocument= async(formData)=> {
     try {
         const response= await axiosInstance.post(API_PATHS.DOCUMENTS.UPLOAD, formData, {
             headers: {
-                'Content-TYpe': 'multipart/form-data',
+                'Content-Type': 'multipart/form-data',
             },
         })
         return response.data
