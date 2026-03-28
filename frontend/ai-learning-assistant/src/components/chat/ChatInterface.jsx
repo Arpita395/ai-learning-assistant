@@ -15,18 +15,29 @@ const ChatInterface = () => {
     const  [initialLoading, setInitialLoading]= useState(true)
     const messagesEndRef= useRef(null)
 
-    const scrollToBotton= ()=> {
+    const scrollToBottom= ()=> {
         messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
     }
 
     useEffect(()=> {
+        console.log("STEP 2 - useEffect triggered")
+
         const fetchChatHistory= async()=> {
+            console.log("STEP 3 - calling API with:", documentId)
+
             try{
                 setInitialLoading(true)
                 const response= await aiService.getChatHistory(documentId)
+                console.log("STEP 4 - API response:", response)
+
                 setHistory(response.data)
             } catch (error) {
-                console.error('Failed to fetch chat history: ', error)
+                console.error("STEP 5 - FULL ERROR:", {
+    message: error.message,
+    response: error.response,
+    data: error.response?.data,
+    status: error.response?.status
+})
             } finally {
                 setInitialLoading(false)
             }
@@ -36,7 +47,7 @@ const ChatInterface = () => {
     }, [documentId])
 
     useEffect(()=> {
-        scrollToBotton()
+        scrollToBottom()
     }, [history])
 
     const handleSendMessage= async(e)=> {
@@ -71,7 +82,34 @@ const ChatInterface = () => {
     }
 
     const renderMessage= (msg, index)=> {
-        return 'renderMessage'
+        const isUser= msg.role=== 'user'
+        return (
+            <div key= {index} className= {`flex items-start gap-3 my-4 ${isUser? 'justify-end' : ''}`}>
+                {isUser && (
+                    <div className='w-9 h-9 rounded-xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/25 flex items-center justify-center shrink-0'>
+                        <Sparkles className='w-4 h-4 text-white' strokeWidth={2} />
+                    </div>
+                )}
+                <div className= {`max-w-lg p-4 rounded-2xl shadow-sm ${
+                    isUser 
+                        ? 'bg-linear-to-br from-emerald-500 to-teal-500 text-white rounded-br-md'
+                        : 'bg-white border border-slate-200/60 text-slate-800 rounded-bl-md'
+                }`}>
+                    {isUser? (
+                        <p className='text-sm leading-relaxed'>{msg.content}</p>
+                    ): (
+                        <div className='prose prose-sm max-w-none prose-slate'>
+                            <MarkdownRenderer content={msg.content} />
+                        </div>
+                    )}
+                </div>
+                {isUser && (
+                    <div className='w-9 h-9 rounded-xl bg-linear-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-700 font-semibold text-sm shrink-0 shadow-sm'>
+                        {user?.username?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                )}
+            </div>
+        )
     }
 
     if(initialLoading) {
@@ -86,7 +124,7 @@ const ChatInterface = () => {
         )
     }
     return ( 
-        <div className='flex flex-col h-[70vh] bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl items-center justify-center shadow-xl shadow-slate-200/50 overflow-hidden'>
+        <div className='flex flex-col h-[70vh] bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden'>
             {/* Messages area */}
                 <div className='flex-1 p-6 overflow-y-auto bg-linear-to-br from-slate-50/50 via-white/50 to-slate-50/50'>
                     {history.length===0 ? (
