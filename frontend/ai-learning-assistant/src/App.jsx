@@ -12,7 +12,6 @@ import FlashcardsListPage from './pages/Flashcards/FlashcardListPage'
 import QuizTakePage from './pages/Quizzes/QuizTakePage';
 import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import ProfilePage from './pages/Profile/ProfilePage';
-import AppLayout from './components/layout/AppLayout';
 import { useAuth } from './context/AuthContext';
 
 

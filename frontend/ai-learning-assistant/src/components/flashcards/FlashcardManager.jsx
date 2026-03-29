@@ -104,12 +104,14 @@ const FlashcardManager = ({documentId}) => {
                     )
                     return {...set, cards: updatedCards}
                 }
+                return set
             })
             setFlashcardSets(updatedSets)
             setSelectedSet(updatedSets.find((set)=> set._id=== selectedSet._id))
             toast.success('Flashcard starred status updated')
         } catch (error) {
             toast.error('Failed to update star status')
+            console.error(error)
         }
     }
 
