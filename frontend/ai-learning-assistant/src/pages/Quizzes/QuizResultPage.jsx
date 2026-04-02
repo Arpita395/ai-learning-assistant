@@ -245,7 +245,7 @@ const QuizResultPage = () => {
                             <ArrowLeft className='w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200' strokeWidth={2.5} />
                             Return to Document
                         </span>
-                        <div className='sbsolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700' />
+                        <div className='absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700' />
                     </button>
                 </Link>
             </div>

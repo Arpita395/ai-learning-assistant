@@ -20,7 +20,10 @@ const DocumentDetailPage = () => {
     const [activeTab, setActiveTab]= useState('Content')
 
     useEffect(()=> {
+        if (!id) return
+
         const fetchDocumentDetails= async()=> {
+            console.log("PARAM ID:", id)
             try {
                 const data= await documentService.getDocumentById(id)
                 setDocument(data)
@@ -46,7 +49,7 @@ const DocumentDetailPage = () => {
             return filePath
         }
 
-        const baseUrl= ProcessingInstruction.env.REACT_APP_API_URL || 'http://localhost:8000'
+        const baseUrl= process.env.REACT_APP_API_URL || 'http://localhost:8000'
         return `${baseUrl}${filePath.startsWith('/')? '': '/'}${filePath}`
     }
 
@@ -123,7 +126,7 @@ const DocumentDetailPage = () => {
     return ( 
         <div>
             <div className='mb-4'>
-                <Link to= '/dashboard' className='iline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors'>
+                <Link to= '/dashboard' className='inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors'>
                     <ArrowLeft size= {16} />
                     Back to Documents
                 </Link>
