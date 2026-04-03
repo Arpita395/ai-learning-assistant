@@ -126,7 +126,7 @@ const DocumentDetailPage = () => {
     return ( 
         <div>
             <div className='mb-4'>
-                <Link to= '/dashboard' className='inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors'>
+                <Link to= '/documents' className='inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors'>
                     <ArrowLeft size= {16} />
                     Back to Documents
                 </Link>

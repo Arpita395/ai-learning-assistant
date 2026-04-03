@@ -92,7 +92,7 @@ const QuizResultPage = () => {
                         <p className='text-sm font-semibold text-slate-600 uppercase tracking-wide mb-2'>
                             Your Score
                         </p>
-                        <div className={`inline-block text-5xl font-bold bg bg-linear-to-r ${getScoreColor(score)} bg-clip-text text-transparent mb-2`}>
+                        <div className={`inline-block text-5xl font-bold bg-linear-to-r ${getScoreColor(score)} bg-clip-text text-transparent mb-2`}>
                             {score}%
                         </div>
                         <p className='text-lg font-medium text-slate-700'>
@@ -133,9 +133,9 @@ const QuizResultPage = () => {
 
                 {detailedResults.map((results, index)=> {
                     const userAnswerIndex= results.options.findIndex(opt=> opt=== results.selectedAnswer)
-                    const correctAnswerIndex= results.correctAnswer.startsWith('0')
-                        ? parseInt(results.correctAnswer.substring(1)) -1
-                        : results.options.findIndex(opt=> opt === results.correctAnswer)
+                    const correctAnswerIndex = results.correctAnswer
+                        ? results.correctAnswer.charCodeAt(0) - 65
+                        : -1
                     const isCorrect= results.isCorrect
 
                     return (

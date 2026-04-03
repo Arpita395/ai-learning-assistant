@@ -89,22 +89,30 @@ export const submitQuiz= async(req, res, next)=> {
         let correctCount= 0
         const userAnswers= []
 
-        answers.forEach(answer=> {
-            const {questionIndex, selectedAnswer}= answer
-            if(questionIndex< quiz.questions.length) {
-                const question= quiz.questions[questionIndex]
-                const isCorrect= selectedAnswer=== question.correctAnswer
+        answers.forEach(answer => {
+        const { questionIndex, selectedAnswer } = answer
 
-                if(!isCorrect) correctCount++
+        if (questionIndex < quiz.questions.length) {
+        const question = quiz.questions[questionIndex]
 
-                userAnswers.push({
-                    questionIndex,
-                    selectedAnswer,
-                    isCorrect,
-                    answeredAt: new Date()
-                })
-            }
+        const selectedIndex = question.options.findIndex(
+            opt => opt === selectedAnswer
+        )
+
+        const correctIndex = question.correctAnswer.charCodeAt(0) - 65
+
+        const isCorrect = selectedIndex === correctIndex
+
+        if (isCorrect) correctCount++
+
+        userAnswers.push({
+            questionIndex,
+            selectedAnswer,
+            isCorrect,
+            answeredAt: new Date()
         })
+        }
+    })
 
         // Calculate score
         const score= Math.round((correctCount/ quiz.totalQuestions) * 100)
@@ -141,7 +149,7 @@ export const getQuizResults= async(req, res, next)=> {
         const quiz= await Quiz.findOne({
             _id: req.params.id,
             userId: req.user._id
-        })
+        }).populate('documentId', 'title')
 
         if(!quiz) {
             return res.status(404).json({

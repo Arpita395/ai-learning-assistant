@@ -3,6 +3,11 @@ import mongoose from "mongoose";
 const chatHistorySchema= new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    documentId: { 
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Document',
         required: true
     },
@@ -18,7 +23,7 @@ const chatHistorySchema= new mongoose.Schema({
         },
         timestamp: {
             type: Date,
-            deafult: Date.now
+            default: Date.now
         },
         relevantChunks: {
             type: [Number],

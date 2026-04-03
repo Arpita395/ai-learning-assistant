@@ -89,27 +89,28 @@ export const generateFlashcards = async (text, count = 10) => {
   }
 };
 
-// ==========================================================
+
 // 2. GENERATE QUIZ QUESTIONS
-// ==========================================================
 export const generateQuiz = async (text, numQuestions = 5) => {
   const prompt = `
 You are an expert examiner.
 
-Generate ${numQuestions} multiple-choice questions from the text.
+Generate ${numQuestions} HIGH-QUALITY multiple-choice questions.
 
-Instructions:
-- Each question must include:
-  - question
-  - 4 options
-  - correctAnswer
-  - explanation
-- Difficulty: moderate
-- Return ONLY valid JSON array, strictly like:
+STRICT RULES:
+- Each question must have EXACTLY 4 DISTINCT options
+- Options must be CLEAR, NON-REPEATING, and MEANINGFUL
+- Do NOT use placeholders like "N/A"
+- Do NOT split numbers incorrectly (e.g., "1 000")
+- Keep formatting clean and readable
+- correctAnswer MUST exactly match one of the options
+
+Return ONLY valid JSON array:
+
 [
   {
     "question": "...",
-    "options": ["A", "B", "C", "D"],
+    "options": ["...", "...", "...", "..."],
     "correctAnswer": "...",
     "explanation": "..."
   }
@@ -164,43 +165,37 @@ ${text}
 
     // 4. Convert options array to string to match schema
     const formattedQuestions = questions.map(q => {
-  let optionsArray = [];
+  let optionsArray = []
 
-  // CASE 1: Already array
-  if (Array.isArray(q.options)) {
-    optionsArray = q.options;
-  }
+// CASE 1: Already array
+if (Array.isArray(q.options)) {
+  optionsArray = q.options
+}
 
-  // CASE 2: String like "A) ..., B) ..., C) ..., D) ..."
-  else if (typeof q.options === "string") {
-    optionsArray = q.options
-      if (Array.isArray(q.options)) {
-  optionsArray = q.options;
-} else {
-  optionsArray = [];
+// CASE 2: String → split properly
+else if (typeof q.options === "string") {
+  optionsArray = q.options
+    .split(/\n|,|[A-D]\)/)   // split on newlines, commas, A) B) etc
+    .map(opt => opt.trim())
+    .filter(opt => opt.length > 0)
 }
 
 // Clean options
-optionsArray = optionsArray.map(opt => opt.trim());
+optionsArray = optionsArray.map(opt =>
+  opt.replace(/^[A-D]\)?\s*/, '').trim()
+)
 
-// Fix broken options (merge if >4)
+// Remove duplicates
+optionsArray = [...new Set(optionsArray)]
+
+// Ensure exactly 4 options
 if (optionsArray.length > 4) {
-  optionsArray = optionsArray.slice(0, 3).concat(
-    optionsArray.slice(3).join(", ")
-  );
+  optionsArray = optionsArray.slice(0, 4)
 }
 
-// Ensure exactly 4
 while (optionsArray.length < 4) {
-  optionsArray.push("N/A");
+  optionsArray.push("N/A")
 }
-  }
-
-  // Ensure exactly 4 options
-  optionsArray = optionsArray.slice(0, 4);
-  while (optionsArray.length < 4) {
-    optionsArray.push("N/A");
-  }
 
   return {
     question: q.question || "N/A",
@@ -218,9 +213,8 @@ while (optionsArray.length < 4) {
   }
 };
 
-// ==========================================================
+
 // 3. GENERATE DOCUMENT SUMMARY
-// ==========================================================
 export const generateSummary = async (text) => {
   const prompt = `
 Generate a detailed, structured summary of the text.
@@ -257,9 +251,8 @@ ${text}
   }
 };
 
-// ==========================================================
+
 // 4. CHAT WITH DOCUMENT CONTEXT
-// ==========================================================
 export const chatWithDocument = async (question, chunks) => {
   const context = chunks.map(c => c.content).join("\n");
 
@@ -302,9 +295,8 @@ ${question}
   }
 };
 
-// ==========================================================
+
 // 5. EXPLAIN A SPECIFIC CONCEPT
-// ==========================================================
 export const explainConcept = async (concept, context) => {
   const prompt = `
 Explain the concept in a simple and detailed way.

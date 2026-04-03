@@ -48,13 +48,10 @@ const explainConcept= async(documentId, concept)=> {
 
 const getChatHistory= async(documentId)=> {
     try {
-        console.log("STEP 6 - API URL:", `/chat-history/${documentId}`)
-
         const response= await axiosInstance.get(API_PATHS.AI.GET_CHAT_HISTORY(documentId))
-        console.log("STEP 7 - RAW RESPONSE:", response)
         return response.data
     } catch (error) {
-        console.error("STEP 8 - SERVICE ERROR:", error.response || error)
+        throw error.response?.data || {message: 'An unknown error occurred'}
     }
 }
 

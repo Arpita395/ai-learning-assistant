@@ -20,24 +20,14 @@ const ChatInterface = () => {
     }
 
     useEffect(()=> {
-        console.log("STEP 2 - useEffect triggered")
 
         const fetchChatHistory= async()=> {
-            console.log("STEP 3 - calling API with:", documentId)
-
             try{
                 setInitialLoading(true)
                 const response= await aiService.getChatHistory(documentId)
-                console.log("STEP 4 - API response:", response)
-
                 setHistory(response.data)
             } catch (error) {
-                console.error("STEP 5 - FULL ERROR:", {
-    message: error.message,
-    response: error.response,
-    data: error.response?.data,
-    status: error.response?.status
-})
+                console.error('Failed to fetch chat history: ', error)
             } finally {
                 setInitialLoading(false)
             }
